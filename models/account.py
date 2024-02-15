@@ -50,15 +50,54 @@ class Account:
     def total_balance(self: object) -> float:
         return self.__total_balance
 
+    @total_balance.setter
+    def total_balance(self: object, value: float) -> None:
+        self.__total_balance = value
+
     @property
     def calculate_total_balance(self: object) -> float:
         return self.balance + self.limit
 
     def deposit(self: object, amount: float) -> None:
-        pass
+        if amount > 0:
+            self.__balance = self.balance + amount
+            self.__total_balance = self.calculate_total_balance
+            print(f'Deposited {format_float_str_coin(amount)} to account: {self.number}')
+        else:
+            print('Error when making deposit. Try again!')
 
     def withdraw(self: object, amount: float) -> None:
-        pass
+        if 0 < amount <= self.total_balance:
+            if self.balance >= amount:
+                self.__balance = self.balance - amount
+                self.__total_balance = self.calculate_total_balance
+                print(f'Withdrawn {format_float_str_coin(amount)} from account: {self.number}')
+            else:
+                remaining: float = self.balance - amount
+                self.limit = self.limit + remaining
+                self.balance = 0
+                self.total_balance = self.calculate_total_balance
+            print(f'Withdrawn {format_float_str_coin(amount)} from account: {self.number}')
+        else:
+            print('Error when making withdraw. Try again!')
 
     def transfer(self: object, destination_account: object, amount: float) -> None:
-        pass
+        if 0 < amount <= self.total_balance:
+            if self.balance >= amount:
+                self.balance = self.balance - amount
+                self.total_balance = self.calculate_total_balance
+                destination_account.balance = destination_account.balance + amount
+                destination_account.total_balance = destination_account.calculate_total_balance
+                print(f'Transferred {format_float_str_coin(amount)} to destination account: '
+                      f'{destination_account.number}')
+            else:
+                remaining: float = self.balance - amount
+                self.limit = self.limit + remaining
+                self.balance = 0
+                self.total_balance = self.calculate_total_balance
+                destination_account.balance = destination_account.balance + amount
+                destination_account.total_balance = destination_account.calculate_total_balance
+            print(f'Transferred {format_float_str_coin(amount)} to destination account: '
+                  f'{destination_account.number}')
+        else:
+            print('Error when making transfer. Try again!')
